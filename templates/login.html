@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Вход в профиль{% endblock %}
+
+{% block content %}
+    <h2 class="">Вход в профиль</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="">
+                    {{ message }} {% if category=='success' %}<a href="/login">Войдите</a>{% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="">
+            Почта: {{ form.email(class="form-control") }}
+        </div>
+        <div class="">
+            Пароль: {{ form.password(class="form-control") }}
+        </div>
+        <button type="submit" class="">Войти</button>
+    </form>
+    <p class="text-center mt-3">Еще нет аккаунта? <a href="{{ url_for('main.register') }}">Зарегистрируйтесь</a></p>
+{% endblock %}

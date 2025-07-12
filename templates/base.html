@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <header class="header">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
+        <div class="logo">
+            <a href="/"><img src="static/images/logo.png" alt="Логотип" class="logo-img"></a>
+            <span class="logo-text">Книжный Магазин "Knigga"</span>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Поиск книг...">
+            <button>🔍</button>
+        </div>
+        {% if username %}
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-outline">Корзина</a>
+                <a href="{{ url_for('main.logout') }}" class="btn">Выход</a>
+            </div>
+        {% else %}
+        <div class="auth-buttons">
+            <a href="/login" class="btn btn-outline">Вход</a>
+            <a href="/register" class="btn">Регистрация</a>
+        </div>
+        {% endif %}
+    </header>
+
+    <nav class="sidebar">
+        <button class="close-sidebar" onclick="toggleSidebar()">×</button>
+        <h3>Жанры</h3>
+        <ul>
+            {% for genre in genres %}
+                <li><a href="#">{{ genre }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-section">
+            <h4>Контакты</h4>
+            <p>Email: support@knigga.ru</p>
+            <p>Телефон: +7 (999) 123-45-67</p>
+        </div>
+        <div class="footer-section">
+            <h4>Доставка</h4>
+            <p>Почта России</p>
+            <p>СДЭК</p>
+            <p>Курьер по Москве</p>
+        </div>
+        <div class="footer-section">
+            <h4>Оплата</h4>
+            <p>Банковская карта</p>
+            <p>Криптоперевод (AVAX, USDT, TON)</p>
+            <p>Рассрочка</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('sidebar-open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
