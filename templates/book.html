@@ -1,6 +1,29 @@
 {% extends 'base.html' %}
 
-{% block title %}{% endblock %}
+{% block title %}{{ book['title'] }}{% endblock %}
 
 {% block content %}
+<div class="book-page-container">
+    <div class="book-details-container">
+        <div class="book-image-container">
+            <img src="{{ url_for('static', filename='images/book.png') }}" alt="{{ book['title'] }}" class="book-page-image">
+        </div>
+        <div class="book-info">
+            <h2 class="book-page-title">{{ book['title'] }}</h2>
+            <p class="book-page-author"><strong>Автор:</strong> {{ book['author'] }}</p>
+            <p class="book-page-genre"><strong>Жанр:</strong> {{ book['genre'] }}</p>
+            <p class="book-page-year"><strong>Год издания:</strong> {{ book['year'] }}</p>
+            <p class="book-page-price"><strong>Цена:</strong> {{ book['price'] }} руб.</p>
+            <p class="book-page-rating"><strong>Рейтинг:</strong> {{ book['rating'] }} / 5</p>
+            <h3 class="book-page-description-title">Описание</h3>
+            <p class="book-page-description">{{ book['description'] }}</p>
+
+            <div class="book-btns">
+                <button class="btn">Добавить в корзину</button>
+                <button class="btn">Оставить отзыв</button>
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endblock %}

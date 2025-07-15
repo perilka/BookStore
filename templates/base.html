@@ -4,28 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="static/css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/inputmask.min.js"></script>
 </head>
 <body>
     <header class="header">
         <button class="hamburger" onclick="toggleSidebar()">☰</button>
-        <div class="logo">
-            <a href="/"><img src="static/images/logo.png" alt="Логотип" class="logo-img"></a>
-            <span class="logo-text">Книжный Магазин "Knigga"</span>
-        </div>
-        <div class="search-bar">
-            <input type="text" placeholder="Поиск книг...">
-            <button>🔍</button>
-        </div>
+        <a href="/" class="logo-link">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Логотип" class="logo-img">
+                <span class="logo-text">Книжный Магазин "Knigga"</span>
+            </div>
+        </a>
+        <form method="GET" action="/">
+            <div class="search-bar">
+                <input type="text" name="search" placeholder="Поиск книг...">
+                <button type="submit">🔍</button>
+            </div>
+        </form>
         {% if username %}
             <div class="auth-buttons">
-                <a href="#" class="btn btn-outline">Корзина</a>
-                <a href="{{ url_for('main.logout') }}" class="btn">Выход</a>
+                <a href="/cart" class="header-btn">Корзина</a>
+                <a href="{{ url_for('main.logout') }}" class="header-btn">Выход</a>
             </div>
         {% else %}
         <div class="auth-buttons">
-            <a href="/login" class="btn btn-outline">Вход</a>
-            <a href="/register" class="btn">Регистрация</a>
+            <a href="/login" class="header-btn">Вход</a>
+            <a href="/register" class="header-btn">Регистрация</a>
         </div>
         {% endif %}
     </header>
@@ -35,7 +40,7 @@
         <h3>Жанры</h3>
         <ul>
             {% for genre in genres %}
-                <li><a href="#">{{ genre }}</a></li>
+                <li><a href="/genre/{{ loop.index }}">{{ genre }}</a></li>
             {% endfor %}
         </ul>
     </nav>
@@ -71,6 +76,11 @@
             document.querySelector('.sidebar').classList.toggle('sidebar-open');
             document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Inputmask("+7 (999) 999-99-99").mask(document.getElementById("phone"));
+        });
     </script>
 </body>
 </html>

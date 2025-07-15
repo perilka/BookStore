@@ -79,39 +79,58 @@ body {
     cursor: pointer;
 }
 
-/* Кнопки входа и регистрации */
-.auth-buttons .btn {
+/* Кнопки входа и регистрации в шапке */
+.auth-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.auth-buttons .header-btn {
     text-decoration: none;
-    padding: 10px 16px;
+    padding: 8px 16px;
     margin-left: 10px;
     border-radius: 6px;
     font-weight: 500;
+    color: #333;
+    background-color: transparent;
+    border: 1px solid #333;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.auth-buttons .header-btn:hover {
+    background-color: #333;
+    color: white;
+}
+
+/* Общие стили для кнопок в формах */
 .btn {
     background-color: #333;
     color: white;
-    transition: background-color 0.3s ease;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+    margin: 20px auto;
 }
 
 .btn:hover {
     background-color: #555;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.btn-outline {
-    background-color: transparent;
-    color: #333;
-    border: 1px solid #333;
-}
-
-.btn-outline:hover {
-    background-color: #f0f0f0;
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Боковое меню */
 .sidebar {
     position: fixed;
-    top:0;
+    top: 0;
     left: -250px;
     width: 250px;
     height: 100%;
@@ -179,7 +198,6 @@ body {
 /* Основной контент */
 .main-content {
     flex: 1;
-    padding: 40px;
     transition: margin-left 0.3s ease;
 }
 
@@ -207,10 +225,30 @@ body {
 .form-container {
     max-width: 400px;
     margin: 40px auto;
-    padding: 20px;
+    padding: 30px;
     background-color: #f8f8f8;
     border: 1px solid #e0e0e0;
     border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
 }
 
 .form-control {
@@ -222,10 +260,30 @@ body {
     font-size: 1rem;
 }
 
+.form-control:focus {
+    border-color: #555;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-link {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.form-link a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.form-link a:hover {
+    text-decoration: underline;
+}
+
 /* Alert styles */
 .alert {
     padding: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     border-radius: 6px;
     text-align: center;
 }
@@ -241,3 +299,328 @@ body {
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
+
+.logo-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Стили для ТОП-3 книги недели */
+.top-books-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.top-books-container h3 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: #333;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.top-books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.book-card {
+    background-color: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 560px;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.book-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.book-image {
+    width: 100%;
+    height: 280px;
+    object-fit: contain;
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.book-details {
+    padding: 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.book-genre {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+    font-style: italic;
+}
+
+.book-author {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.book-price {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.book-description {
+    font-size: 0.95rem;
+    color: #444;
+    margin-bottom: 12px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+
+.book-rating {
+    font-size: 0.95rem;
+    color: #e6b800;
+    font-weight: 500;
+}
+
+/* Стили для книг определенного жанра */
+.genre-books-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.genre-books-container h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 28px;
+    color: #333;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.genre-books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.genre-book-card {
+    background-color: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.genre-book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.genre-book-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.genre-book-image {
+    width: 100%;
+    height: 240px;
+    object-fit: contain;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.genre-book-details {
+    padding: 14px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.genre-book-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.genre-book-genre {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 6px;
+    font-style: italic;
+}
+
+.genre-book-author {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.genre-book-price {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.genre-book-description {
+    font-size: 0.9rem;
+    color: #444;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+
+.genre-book-rating {
+    font-size: 0.9rem;
+    color: #e6b800;
+    font-weight: 500;
+}
+
+.welcome-message {
+    text-align: center;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 15px auto;
+    padding: 0;
+}
+
+.welcome-message p {
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Стили для страницы книги */
+.book-page-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.book-details-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    background-color: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.book-image-container {
+    flex: 1;
+    min-width: 300px;
+    max-width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.book-page-image {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.book-info {
+    flex: 2;
+    min-width: 300px;
+    padding: 20px;
+}
+
+.book-page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.book-page-author,
+.book-page-genre,
+.book-page-year,
+.book-page-price,
+.book-page-rating {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.book-page-author strong,
+.book-page-genre strong,
+.book-page-year strong,
+.book-page-price strong,
+.book-page-rating strong {
+    color: #333;
+    font-weight: 500;
+}
+
+.book-page-description-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.book-page-description {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.book-btns {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+

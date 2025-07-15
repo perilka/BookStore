@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ genre }}{% endblock %}
+
+{% block content %}
+    <div class="genre-books-container">
+        <h3>🐳 {{ genre }} 🐳</h3>
+        <div class="genre-books-grid">
+            {% for book in books %}
+                <a href="/book/{{ book['id'] }}" class="genre-book-card-link">
+                    <div class="genre-book-card">
+                        <img src="{{ url_for('static', filename='images/book.png') }}" alt="{{ book['title'] }}" class="genre-book-image">
+                        <div class="genre-book-details">
+                            <h4 class="genre-book-title">{{ book['title'] }}</h4>
+                            <p class="genre-book-genre">{{ book['genre'] }}</p>
+                            <p class="genre-book-author">{{ book['author'] }}</p>
+                            <p class="genre-book-price">{{ book['price'] }} ₽</p>
+                            <p class="genre-book-description">{{ book['description'] }}</p>
+                            <p class="genre-book-rating">Рейтинг: {{ book['rating'] }} ★</p>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
