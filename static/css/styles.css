@@ -863,7 +863,6 @@ body {
     text-decoration: underline;
 }
 
-/* Весь {% content block %} в my_orders.html */
 .orders-title {
     font-size: 2rem;
     font-weight: 700;
