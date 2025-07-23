@@ -7,6 +7,7 @@
 <div class="welcome-message">
     {% if username %}
         <p>Привет, {{ username }}!</p>
+        <a href="{{ url_for('main.show_orders') }}" class="history-link">👉 История заказов 👈</a>
     {% else %}
         <p>Войдите или зарегистрируйтесь, чтобы совершать покупки!</p>
     {% endif %}

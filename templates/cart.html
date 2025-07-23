@@ -3,4 +3,46 @@
 {% block title %}Корзина{% endblock %}
 
 {% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+{% if cart_items %}
+<section class="cart-page-container">
+  <h2 class="cart-page-title">🐵 Ваша корзина 🐵</h2>
+  <ul class="cart-page-list">
+    {% for item in cart_items %}
+    <li class="cart-page-item">
+      <div class="cart-page-book">
+        <img
+          src="{{ url_for('static', filename='images/book.png') }}"
+          alt="{{ item.book_title }}"
+          class="cart-page-image"
+        />
+        <div class="cart-page-info">
+          <a href="{{ url_for('main.book', id=item.book_id) }}" class="cart-page-book-title">
+            {{ item.book_title }}
+          </a>
+          <div class="cart-page-book-author">{{ item.book_author }}</div>
+          <div class="cart-page-book-amount">{{ item.amount }} шт.</div>
+        </div>
+      </div>
+      <div class="cart-page-meta">
+        <span class="cart-page-price">{{ item.total_price }} ₽</span>
+        <a href="{{ url_for('main.delete_from_cart', id=item.id) }}" class="cart-page-delete">Удалить 🗑️</a>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<a href="{{ url_for('main.add_order') }}" class="checkout-btn">Оформить заказ</a>
+{% endif %}
+
+
 {% endblock %}

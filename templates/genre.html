@@ -3,6 +3,17 @@
 {% block title %}{{ genre }}{% endblock %}
 
 {% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
     <div class="genre-books-container">
         <h3>🐳 {{ genre }} 🐳</h3>
         <div class="genre-books-grid">

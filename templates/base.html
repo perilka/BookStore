@@ -10,13 +10,13 @@
 <body>
     <header class="header">
         <button class="hamburger" onclick="toggleSidebar()">☰</button>
-        <a href="/" class="logo-link">
+        <a href="{{ url_for('main.main_route') }}" class="logo-link">
             <div class="logo">
                 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Логотип" class="logo-img">
                 <span class="logo-text">Книжный Магазин "Knigga"</span>
             </div>
         </a>
-        <form method="GET" action="/">
+        <form method="GET" action="{{ url_for('main.main_route') }}">
             <div class="search-bar">
                 <input type="text" name="search" placeholder="Поиск книг...">
                 <button type="submit">🔍</button>
@@ -24,13 +24,13 @@
         </form>
         {% if username %}
             <div class="auth-buttons">
-                <a href="/cart" class="header-btn">Корзина</a>
-                <a href="{{ url_for('main.logout') }}" class="header-btn">Выход</a>
+                <a href="{{ url_for('main.cart') }}" class="header-btn">Корзина</a>
+                <a href="{{ url_for('main.logout') }}" class="header-btn" onclick="return confirm('Вы уверены, что хотите выйти?')">Выход</a>
             </div>
         {% else %}
         <div class="auth-buttons">
-            <a href="/login" class="header-btn">Вход</a>
-            <a href="/register" class="header-btn">Регистрация</a>
+            <a href="{{ url_for('main.login') }}" class="header-btn">Вход</a>
+            <a href="{{ url_for('main.register') }}" class="header-btn">Регистрация</a>
         </div>
         {% endif %}
     </header>
@@ -59,9 +59,8 @@
         </div>
         <div class="footer-section">
             <h4>Доставка</h4>
-            <p>Почта России</p>
-            <p>СДЭК</p>
-            <p>Курьер по Москве</p>
+            <p>Самовывоз</p>
+            <p>Доставка до двери</p>
         </div>
         <div class="footer-section">
             <h4>Оплата</h4>

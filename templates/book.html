@@ -3,27 +3,81 @@
 {% block title %}{{ book['title'] }}{% endblock %}
 
 {% block content %}
-<div class="book-page-container">
-    <div class="book-details-container">
-        <div class="book-image-container">
-            <img src="{{ url_for('static', filename='images/book.png') }}" alt="{{ book['title'] }}" class="book-page-image">
-        </div>
-        <div class="book-info">
-            <h2 class="book-page-title">{{ book['title'] }}</h2>
-            <p class="book-page-author"><strong>Автор:</strong> {{ book['author'] }}</p>
-            <p class="book-page-genre"><strong>Жанр:</strong> {{ book['genre'] }}</p>
-            <p class="book-page-year"><strong>Год издания:</strong> {{ book['year'] }}</p>
-            <p class="book-page-price"><strong>Цена:</strong> {{ book['price'] }} руб.</p>
-            <p class="book-page-rating"><strong>Рейтинг:</strong> {{ book['rating'] }} / 5</p>
-            <h3 class="book-page-description-title">Описание</h3>
-            <p class="book-page-description">{{ book['description'] }}</p>
 
-            <div class="book-btns">
-                <button class="btn">Добавить в корзину</button>
-                <button class="btn">Оставить отзыв</button>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
             </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
-        </div>
+<section class="book-page-container">
+  <div class="book-page-details">
+    <figure class="book-page-image-container">
+      <img src="{{ url_for('static', filename='images/book.png') }}" alt="{{ book['title'] }}" class="book-page-image"/>
+    </figure>
+
+    <div class="book-page-info">
+      <h1 class="book-page-title">{{ book['title'] }}</h1>
+      <ul class="book-page-meta">
+        <li><strong>Автор:</strong> {{ book['author'] }}</li>
+        <li><strong>Жанр:</strong> {{ book['genre'] }}</li>
+        <li><strong>Год издания:</strong> {{ book['year'] }}</li>
+        <li><strong>Цена:</strong> {{ book['price'] }} руб.</li>
+        <li><strong>Рейтинг:</strong> {{ book['rating'] }}/5</li>
+      </ul>
+
+      <div class="book-page-description-block">
+        <h2 class="book-page-description-title">Описание</h2>
+        <p class="book-page-description">{{ book['description'] }}</p>
+      </div>
+
+      <div class="book-page-actions">
+        <form method="POST" action="{{ url_for('main.add_to_cart', book_id=book['id']) }}" class="book-page-cart-form">
+          <label for="amount" class="book-page-amount-label">Количество:</label>
+          <input type="number" id="amount" name="amount" value="1" min="1" class="book-page-amount-input"/>
+          <button type="submit" class="book-page-btn">Добавить в корзину</button>
+        </form>
+      </div>
     </div>
-</div>
+  </div>
+
+  <div class="book-page-review-block">
+    <h2 class="book-page-description-title">Оставить отзыв</h2>
+    <form method="POST" action="{{ url_for('main.add_review', book_id=book['id']) }}" class="book-page-review-form">
+      <textarea name="review_text" placeholder="Напишите ваш отзыв здесь..." required class="book-page-review-textarea"></textarea>
+      <div class="book-page-rating-group">
+        <div class="book-page-rating-label">Оценка:</div>
+        <div class="book-page-rating-options">
+          {% for i in range(1, 6) %}
+            <label>
+              <input type="radio" name="grade" value="{{ i }}" required class="book-page-rating-radio"/>
+              {{ i }}
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+      <button type="submit" class="book-page-btn">Отправить отзыв</button>
+    </form>
+  </div>
+</section>
+
+{% if reviews %}
+  <div class="book-page-review-list">
+    <h2 class="book-page-description-title">Отзывы читателей</h2>
+    {% for review in reviews %}
+      <div class="book-page-review-item">
+        <div class="book-page-review-header">
+          <span class="book-page-review-username">{{ review['username'] }}</span>
+          <span class="book-page-review-grade">Оценка: {{ review['grade'] }} / 5</span>
+        </div>
+        <p class="book-page-review-text">{{ review['review_text'] }}</p>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
 {% endblock %}

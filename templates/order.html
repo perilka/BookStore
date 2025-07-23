@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Оформление заказа{% endblock %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<h2 class="order-form-title">Оформление заказа</h2>
+
+  <form method="POST" action="{{ url_for('main.add_order') }}">
+    <div class="order-form-group">
+      <label class="order-form-label">Способ получения:</label>
+      <div>
+      <label><input type="radio" name="delivery_method" value="pickup" checked
+               onclick="toggleAddress(false)" class="order-form-radio">Самовывоз</label>
+      </div>
+      <div>
+      <label><input type="radio" name="delivery_method" value="door"
+               onclick="toggleAddress(true)" class="order-form-radio">Доставка до двери</label>
+      </div>
+    </div>
+
+    <div id="address-block" style="display: none; margin-top: 1em;">
+      <label for="address" class="order-form-label">Адрес доставки:</label>
+      <input type="text" id="address" name="address" placeholder="Улица, дом, кв." size="50">
+    </div>
+
+    <div style="margin-top: 1em;">
+      <button type="submit" class="order-form-submit">Подтвердить и отправить заказ</button>
+    </div>
+  </form>
+
+  <script>
+    function toggleAddress(show) {
+      document.getElementById('address-block').style.display = show ? 'block' : 'none';
+    }
+  </script>
+{% endblock %}
