@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Подтверждение кода{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="form-title">Подтверждение кода</h2>
+    <p>Код подтверждения был отправлен на ваш телефон. Пожалуйста, введите его ниже.</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="POST">
+        <div class="form-group">
+            <label for="code" class="form-label">Код подтверждения</label>
+            <input type="text" name="code" id="code" class="form-control" required>
+        </div>
+        <button type="submit" class="btn">Подтвердить</button>
+    </form>
+</div>
+{% endblock %}

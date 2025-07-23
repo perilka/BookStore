@@ -1,5 +1,7 @@
 from functools import wraps
-from flask import Blueprint, flash, redirect, url_for, render_template, session, request
+from typing import Any, Callable, Dict, List, Union
+
+from flask import Blueprint, flash, redirect, url_for, render_template, session as flask_session, request, Response
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy.orm import subqueryload
 
@@ -13,11 +15,9 @@ from datetime import datetime
 
 main_blueprint = Blueprint("main", __name__)
 
-def anonymous_required(f):
+def anonymous_required(f: Callable[..., Any]) -> Callable[..., Any]:
     """
     Декоратор для доступа только неавторизованным пользователям
-    :param f:
-    :return:
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -26,9 +26,13 @@ def anonymous_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 @main_blueprint.route('/register', methods=['GET', 'POST'])
 @anonymous_required
-def register():
+def register() -> Union[str, Response]:
+    """
+    Обработка регистрации нового пользователя
+    """
     form = RegistrationForm()
     if form.validate_on_submit():
         with session_scope() as session:
@@ -41,22 +45,58 @@ def register():
         if user:
             flash('Пользователь с таким номером телефона уже зарегистрирован', category='danger')
             return redirect(url_for('main.register', form=form, genres=get_genres()))
-        user = User(
-            username=form.username.data,
-            email=form.email.data,
-            phone=form.phone.data,
-            password_hash=generate_password_hash(form.password.data)
-        )
-        with session_scope() as session:
-            session.add(user)
-        flash('Вы успешно зарегистрировались!', category='success')
+
+        confirmation_code = generate_confirmation_code()
+        flask_session['confirmation_code'] = confirmation_code
+        flask_session['pending_user'] = {
+            'username': form.username.data,
+            'email': form.email.data,
+            'phone': form.phone.data,
+            'password_hash': generate_password_hash(form.password.data)
+        }
+        print(f"Код подтверждения: {confirmation_code}")
+        return redirect(url_for('main.confirm_code'))
     elif form.errors:
         flash(form.errors, category='danger')
     return render_template('register.html', form=form, genres=get_genres())
 
+
+@main_blueprint.route('/confirm_code', methods=['GET', 'POST'])
+@anonymous_required
+def confirm_code() -> Union[str, Response]:
+    """
+    Подтверждение кода регистрации пользователя
+    """
+    if request.method == 'POST':
+        entered_code = request.form.get('code')
+        if entered_code == flask_session.get('confirmation_code'):
+            pending_user = flask_session.get('pending_user')
+            if pending_user:
+                user = User(
+                    username=pending_user['username'],
+                    email=pending_user['email'],
+                    phone=pending_user['phone'],
+                    password_hash=pending_user['password_hash']
+                )
+                with session_scope() as session:
+                    session.add(user)
+                flask_session.pop('confirmation_code', None)
+                flask_session.pop('pending_user', None)
+                flash('Вы успешно зарегистрировались!', category='success')
+                return redirect(url_for('main.login'))
+            else:
+                flash('Ошибка регистрации. Пожалуйста, попробуйте снова.', category='danger')
+                return redirect(url_for('main.register'))
+        else:
+            flash('Неверный код подтверждения.', category='danger')
+    return render_template('confirm_code.html')
+
 @main_blueprint.route('/login', methods=["GET", "POST"])
 @anonymous_required
-def login():
+def login() -> Union[str, Response]:
+    """
+    Аутентификация пользователя в систему
+    """
     form = LoginForm()
     if form.validate_on_submit():
         with session_scope() as session:
@@ -68,12 +108,18 @@ def login():
     return render_template('login.html', form=form, genres=get_genres())
 
 @main_blueprint.route('/logout')
-def logout():
+def logout() -> Response:
+    """
+    Выход пользователя из системы
+    """
     logout_user()
     return redirect(url_for('main.login'))
 
 @main_blueprint.route('/', methods=['GET', 'POST'])
-def main_route():
+def main_route() -> Union[str, Response]:
+    """
+    Главная страница: поиск или отображение топ-книг
+    """
     if request.method == 'GET':
         return search_by_title('search')
     username = get_username()
@@ -81,7 +127,10 @@ def main_route():
                            username=username, genres=get_genres(), top_books=get_top_books())
 
 @main_blueprint.route('/genre/<int:num>')
-def genre_books(num):
+def genre_books(num: int) -> str:
+    """
+    Отображение книг выбранного жанра
+    """
     genre = get_genres()[num-1]
     books = get_by_genre(genre)
     username = get_username()
@@ -90,7 +139,10 @@ def genre_books(num):
 
 
 @main_blueprint.route('/book/<int:id>')
-def book(id):
+def book(id: int) -> str:
+    """
+    Страница с деталями книги и отзывами
+    """
     username = get_username()
     books = get_books()
     reviews = get_reviews(id)
@@ -101,7 +153,10 @@ def book(id):
 
 @main_blueprint.route('/cart')
 @login_required
-def cart():
+def cart() -> str:
+    """
+    Просмотр содержимого корзины
+    """
     username = get_username()
     user_id = current_user.id
     cart_items = get_cart_items(user_id)
@@ -115,7 +170,10 @@ def cart():
 
 @main_blueprint.route('/cart/add/<int:book_id>', methods=['POST', 'GET'])
 @login_required
-def add_to_cart(book_id):
+def add_to_cart(book_id: int) -> Response:
+    """
+    Добавление книги в корзину пользователя
+    """
     amount = int(request.form.get('amount', 1)) if request.method == 'POST' else 1
     if amount <= 0:
         flash('Количество должно быть больше 0.', category='error')
@@ -145,7 +203,10 @@ def add_to_cart(book_id):
 
 @main_blueprint.route('/cart/delete/<int:id>')
 @login_required
-def delete_from_cart(id):
+def delete_from_cart(id: int) -> Response:
+    """
+    Удаление или уменьшение количества книги в корзине
+    """
     with session_scope() as session:
         item = session.query(CartItem).get(id)
         if not item or item.user_id != current_user.id:
@@ -161,7 +222,10 @@ def delete_from_cart(id):
 
 @main_blueprint.route('/review/add/<int:book_id>', methods=["POST", "GET"])
 @login_required
-def add_review(book_id):
+def add_review(book_id: int) -> Response:
+    """
+    Добавление нового отзыва к книге
+    """
     review_text = request.form.get('review_text')
     grade = int(request.form.get('grade'))
     with session_scope() as session:
@@ -189,7 +253,10 @@ def add_review(book_id):
 
 @main_blueprint.route('/add_order', methods=["POST", "GET"])
 @login_required
-def add_order():
+def add_order() -> Union[str, Response]:
+    """
+    Создание нового заказа пользователя
+    """
     if request.method == "POST":
         delivery_method = request.form.get('delivery_method')
         if delivery_method not in ('pickup', 'door'):
@@ -233,7 +300,10 @@ def add_order():
 
 @main_blueprint.route("/my_orders")
 @login_required
-def show_orders():
+def show_orders() -> str:
+    """
+    Отображение списка всех заказов пользователя
+    """
     username = get_username()
     with session_scope() as session:
         orders = session.query(Order).options(subqueryload(Order.order_items).subqueryload(OrderItem.book)).filter_by(user_id=current_user.id).all()
@@ -245,10 +315,16 @@ def show_orders():
 
 
 
-def generate_confirmation_code(length=4):
+def generate_confirmation_code(length: int = 4) -> str:
+    """
+    Генерация кода подтверждения заданной длины
+    """
     return ''.join(random.choices('0123456789', k=length))
 
-def get_orders(orders):
+def get_orders(orders: List[Order]) -> List[Dict[str, Any]]:
+    """
+    Преобразование объектов Order в список словарей
+    """
     result = []
     for order in orders:
         order_dict = {
@@ -269,20 +345,29 @@ def get_orders(orders):
         result.append(order_dict)
     return result
 
-def get_username():
+def get_username() -> Union[str, bool]:
+    """
+    Получение имени текущего пользователя или False
+    """
     if current_user.is_authenticated:
         return current_user.username
     else:
         return False
 
-def get_genres():
+def get_genres() -> List[str]:
+    """
+    Получение списка уникальных жанров из всех книг
+    """
     books = get_books()
     genres = []
     for book in books:
         genres.append(book['genre'])
     return sorted(list(set(genres)))
 
-def obj_to_dict(books):
+def obj_to_dict(books: List[Book]) -> List[Dict[str, Any]]:
+    """
+    Преобразование списка объектов Book в список словарей
+    """
     return [{
         "id": book.id,
         "title": book.title,
@@ -295,16 +380,25 @@ def obj_to_dict(books):
         "year": book.year
     } for book in books]
 
-def get_books() -> list[dict]:
+def get_books() -> List[Dict[str, Any]]:
+    """
+    Получение всех книг из базы данных
+    """
     with session_scope() as session:
         books = session.query(Book).all()
         return obj_to_dict(books)
 
-def get_top_books():
+def get_top_books() -> List[Dict[str, Any]]:
+    """
+    Получение трех книг с наивысшим рейтингом
+    """
     books = get_books()
     return sorted(books, key=lambda x: x['rating'], reverse=True)[:3]
 
-def get_by_genre(genre):
+def get_by_genre(genre: str) -> List[Dict[str, Any]]:
+    """
+    Получение книг по заданному жанру
+    """
     books = get_books()
     genre_books = []
     for book in books:
@@ -312,7 +406,10 @@ def get_by_genre(genre):
             genre_books.append(book)
     return genre_books
 
-def search_by_title(search):
+def search_by_title(search: str) -> Union[str, Response]:
+    """
+    Поиск книг по названию и отображение результатов
+    """
     search_query = request.args.get(search, '').strip()
     username = get_username()
     if search_query:
@@ -330,7 +427,10 @@ def search_by_title(search):
                            genres=get_genres(),
                            top_books=get_top_books())
 
-def get_cart_items(user_id):
+def get_cart_items(user_id: int) -> List[Dict[str, Any]]:
+    """
+    Получение содержимого корзины пользователя в виде списка словарей
+    """
     with session_scope() as session:
         cart_items = session.query(CartItem).filter_by(user_id=user_id).all()
         return [
@@ -343,7 +443,10 @@ def get_cart_items(user_id):
              } for item in cart_items
         ]
 
-def get_reviews(book_id):
+def get_reviews(book_id: int) -> List[Dict[str, Any]]:
+    """
+    Получение отзывов для заданной книги
+    """
     with session_scope() as session:
         reviews = session.query(Review).filter_by(book_id=book_id).all()
         return [
@@ -355,7 +458,10 @@ def get_reviews(book_id):
              } for review in reviews
         ]
 
-def update_rating(rev_id):
+def update_rating(rev_id: int) -> None:
+    """
+    Обновление рейтинга книги на основе нового отзыва (сделано по-лоховски, но по-другому с текущей бд реализовать было сложно)
+    """
     with session_scope() as session:
         review = session.query(Review).filter_by(id=rev_id).first()
         grade = review.grade
